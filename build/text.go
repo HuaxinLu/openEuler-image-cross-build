@@ -17,6 +17,10 @@ func ChangeFile(filePath string) (string, error) {
 
 	// create new dockerfile
 	filePathNew := filePath + ".cross"
+    _, err = os.Stat(filePathNew)
+    if err == nil {
+        os.Remove(filePathNew)
+    }
 	df_new, err := os.OpenFile(filePathNew, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return "", err
