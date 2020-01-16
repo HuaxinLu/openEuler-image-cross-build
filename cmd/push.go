@@ -16,8 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	"openEuler-image-cross-build/push"
 )
@@ -25,16 +23,11 @@ import (
 // pushCmd represents the push command
 var pushCmd = &cobra.Command{
 	Use:   "push",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Push image to respository",
+	Long: ``,
 	Args: cobra.MinimumNArgs(1), 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("push called")
+		//fmt.Println("push called")
 		push.PushImage(args[0])
 	},
 }
