@@ -16,11 +16,9 @@ limitations under the License.
 package main
 
 import(
-	"fmt"
 	"hwbuild/cmd"
 )
 
 func main() {
-	fmt.Println("Docker client created!")
 	cmd.Execute()
 }

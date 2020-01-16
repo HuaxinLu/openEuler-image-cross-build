@@ -5,5 +5,6 @@ RUN yum -y install httpd \
     && touch /var/www/html/index.html \
     && echo "Hello World!" >> /var/www/html/index.html \
     && chmod -v +x /run.sh
+	&& rm -f /usr/bin/qemu-aarch64-static
 EXPOSE 80
 CMD ["/run.sh"]
