@@ -19,7 +19,7 @@ import (
 	//"fmt"
 	//"strings"
 	"github.com/spf13/cobra"
-    "hwbuild/build"
+    "openEuler-image-cross-build/build"
 )
 
 // buildCmd represents the build command

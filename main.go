@@ -16,7 +16,7 @@ limitations under the License.
 package main
 
 import(
-	"hwbuild/cmd"
+	"openEuler-image-cross-build/cmd"
 )
 
 func main() {

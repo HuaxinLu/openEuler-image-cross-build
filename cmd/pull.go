@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"hwbuild/pull"
+	"openEuler-image-cross-build/pull"
 )
 
 // pullCmd represents the pull command

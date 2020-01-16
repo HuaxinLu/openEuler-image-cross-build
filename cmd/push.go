@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"hwbuild/push"
+	"openEuler-image-cross-build/push"
 )
 
 // pushCmd represents the push command

@@ -10,7 +10,7 @@ import(
 	"errors"
 	"archive/tar"
 	"github.com/docker/docker/api/types"
-	docker "hwbuild/dockerclient"
+	docker "openEuler-image-cross-build/dockerclient"
 )
 
 type BuildOpt struct{

@@ -7,7 +7,7 @@ import(
 	"encoding/json"
 	"encoding/base64"
 	"github.com/docker/docker/api/types"
-	docker "hwbuild/dockerclient"
+	docker "openEuler-image-cross-build/dockerclient"
 )
 
 //push镜像
