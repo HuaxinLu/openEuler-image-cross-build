@@ -6,13 +6,11 @@ import(
     "context"
 	"log"
 	"os"
-	"io"
 	"path/filepath"
 	"errors"
 	"archive/tar"
-	"encoding/json"
-    "github.com/docker/docker/client"
     "github.com/docker/docker/api/types"
+	docker "hwbuild/dockerclient"
 )
 
 type BuildOpt struct{
@@ -20,80 +18,53 @@ type BuildOpt struct{
     ImageTag string
 }
 
-//build镜像
+//build image
 func BuildImage(filePath string, opt* BuildOpt)error {
-	//新建docker客户
-	cli, err := client.NewClient("tcp://0.0.0.0:8088", "v1.40", nil, nil)
-    if err != nil {
-        fmt.Printf("%v\n", err)
-        return err
-    }
-	//合成dockerfile路径
+	// create docker client
+	cli, err := docker.CreateClient()
+	if err != nil {
+		log.Fatal(err, " :unable to create docker client.")
+		return err
+	}
+	// get whole Dockerfile path
 	dockerfilePath := filepath.Join(filePath, opt.DockerfileName)
-	fmt.Printf("The path of dockerfile is %s.\n", dockerfilePath)
-	//修改dockerfile，生成用于跨平台构建的dockerfile
-	dockerfileCrossName, err := ChangeFile(dockerfilePath)
+	//fmt.Printf("The path of dockerfile is %s.\n", dockerfilePath)
+	//change dockerfile, add cross build model
+	_, err = ChangeFile(dockerfilePath)
     if err != nil {
-        fmt.Printf("%v\n", err)
+        log.Fatal(err, " :unable to change dockerfile.")
         return err
     }
-	//dockerfileCrossName := "DockerfileCross"
-	//打包文件，建立build上下文环境
+	// tar the whole file for building, used for build context
     buf := new(bytes.Buffer)
     tw := tar.NewWriter(buf)
     defer tw.Close()
-	//文件目录必须为文件夹
+	// filePath must be a folder
     sfileInfo, err := os.Stat(filePath)
     if err != nil {
-		fmt.Printf("%v\n", err)
+		log.Fatal(err, " :unable to get file status.")
 		return err
 	}
 	if !sfileInfo.IsDir() {
-		fmt.Println("The filepath must be folder.")
+		fmt.Println("error: the filepath must be folder.")
 		return errors.New("The filepath must be folder")
 	}
-	//建立tar文件，注意不包含第一级目录，即直接打包文件
 	tarCreate(filePath, tw)
-	//构建镜像
+	//build
 	tarReader := bytes.NewReader(buf.Bytes())
     imageBuildResponse, err := cli.ImageBuild(
         context.Background(),
         tarReader,
         types.ImageBuildOptions{
             Context:    tarReader,
-            Dockerfile: dockerfileCrossName,
+            Dockerfile: opt.DockerfileName+".cross",
             Tags:       []string{opt.ImageTag},
             Remove:     false})
     if err != nil {
         log.Fatal(err, " :unable to build docker image")
     }
-	//处理构建中的消息
-    //defer imageBuildResponse.Body.Close()
-    //_, err = io.Copy(os.Stdout, imageBuildResponse.Body)
 	buildResp := imageBuildResponse.Body
-	d := json.NewDecoder(buildResp)
-	
-	type Event struct {
-		Stream	string `json:"stream"`
-		Error   string `json:"error"`
-	}
-
-	var event *Event
-	fmt.Printf("Start to build...\n")
-	for {
-		if err := d.Decode(&event); err != nil {
-			if err == io.EOF {
-				break
-			}
-			panic(err)
-		}
-		if event.Stream != "" && event.Stream != "\n" {
-			fmt.Printf("Docker message: %s\n", event.Stream)
-		}
-		if event.Error != "" {
-			fmt.Printf("Docker error: %s\n", event.Error)
-		}
-	}
-	
+	err = docker.ResolveBuild(buildResp)
+	fmt.Printf("Build finished...\n")	
     return err
 }
