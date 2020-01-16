@@ -1,47 +1,46 @@
 package build
 
 import(
-    "os"
-    "io"
-    "bufio"
-    //"fmt"
-    "bytes"
+	"os"
+	"io"
+	"bufio"
+	"bytes"
 )
 
 func ChangeFile(filePath string) (string, error) {
-    // open origin dockerfile
-    df_ori, err := os.OpenFile(filePath, os.O_RDWR,0644)
-    if err != nil {
-        return "", err
-    }
-    defer df_ori.Close()
+	// open origin dockerfile
+	df_ori, err := os.OpenFile(filePath, os.O_RDWR, 0644)
+	if err != nil {
+		return "", err
+	}
+	defer df_ori.Close()
 
-    // create new dockerfile
+	// create new dockerfile
 	filePathNew := filePath + ".cross"
-    df_new, err := os.OpenFile(filePathNew, os.O_WRONLY|os.O_CREATE, 0644)
-    if err != nil {
-        return "", err
-    }
-    defer df_new.Close()
+	df_new, err := os.OpenFile(filePathNew, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return "", err
+	}
+	defer df_new.Close()
 
-    bfRd := bufio.NewReader(df_ori)
-    bfWr := bufio.NewWriter(df_new)
+	bfRd := bufio.NewReader(df_ori)
+	bfWr := bufio.NewWriter(df_new)
 	hasAdded := false 
-    for {
-        //按行读取原始dockerfile
-        line, err := bfRd.ReadBytes('\n')
-        if err != nil {
-            if err == io.EOF {
-                return filePathNew, nil
-            }
-            return filePathNew, err
-        }
+	for {
+		//read every line in dockerfile
+		line, err := bfRd.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				return filePathNew, nil
+			}
+			return filePathNew, err
+		}
 		// write new dockerfile
 		_, err = bfWr.Write(line)
 		if err != nil {
 			return filePathNew, err
 		}	
-        // find the FROM line
+		// find the FROM line
 		if hasAdded == false {
 			fields := bytes.Fields(line)
 			//for _, b := range fields {
@@ -54,9 +53,8 @@ func ChangeFile(filePath string) (string, error) {
 			}	
 		}
 		if err = bfWr.Flush(); err != nil {
-			return "DockerfileCross", err
-		}
-		
-    }
-   return filePathNew, nil 
+			return filePathNew, err
+		}		
+	}
+	return filePathNew, nil 
 }
