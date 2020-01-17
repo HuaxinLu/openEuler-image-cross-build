@@ -8,7 +8,7 @@ This project is developed and tested in Huawei cloud server, and the OS is CentO
 1. Run `sh prepare.sh` to get **qemu-aarch64-static** and set **binfmt_misc** function.
 2. Copy **qemu-aarch64-static** to the directory that you want to build a docker image.
 3. Run `go install` to install the project.
-4. You can run `qemu-aarch64-static pull imagename`, `qemu-aarch64-static push imagename` and `qemu-aarch64-static build -f dockerfilename -t imagetag directory` like docker.
+4. You can run `openEuler-image-cross-build pull imagename`, `openEuler-image-cross-build push imagename` and `openEuler-image-cross-build build -f dockerfilename -t imagetag directory` like docker.
 
 ## Example
 The **example** folder is an example to use this project to build an aarch64 httpd image based on openEuler 1.0 OS image in x86_64 platform.
